@@ -40,7 +40,33 @@ public:
 		std::move(values.begin(), values.end(), m_data);
 	}
 
-	//template<typename>
+	// Chapter 6.4
+	Vector(const volatile Vector<T>&) = delete;
+
+	template<typename U>
+	Vector(const Vector<U>& other)
+	{
+		Reserve(other.m_size);
+		for (auto&& i : other)
+		{
+			Push(i);
+		}
+	}
+
+	// Chapter 6.4
+	Vector(volatile Vector<T>&&) = delete;
+
+	template<typename U>
+	Vector(Vector<U>&& other)
+	{
+		Reserve(other.m_size);
+		for (auto&& i : other)
+		{
+			Push(std::move(i));
+		}
+
+		other.Clear();
+	}
 
 	template<typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
 	void Push(U&& value)
@@ -121,23 +147,8 @@ public:
 		return m_data[index];
 	}
 
-	Vector<T>& operator=(const Vector<T>& other)
-	{
-		if (this == &other)
-		{
-			return *this;
-		}
-
-		Clear();
-		Reserve(other.m_capacity);
-
-		for (auto&& i : other)
-		{
-			Push(i);
-		}
-
-		return *this;
-	}
+	// Chapter 6.4
+	Vector<T>& operator=(const volatile Vector<T>&) = delete;
 
 	template<typename U>
 	Vector<T>& operator=(const Vector<U>& other)
@@ -158,25 +169,7 @@ public:
 		return *this;
 	}
 
-	Vector<T>& operator=(Vector<T>&& other)
-	{
-		if (this == &other)
-		{
-			return *this;
-		}
-
-		Clear();
-		Reserve(other.m_capacity);
-
-		for (auto&& i : other)
-		{
-			Push(i);
-		}
-
-		other.Clear();
-
-		return *this;
-	}
+	Vector<T>& operator=(volatile Vector<T>&& other) = delete;
 
 	template<typename U>
 	Vector<T>& operator=(Vector<U>&& other)
@@ -191,7 +184,7 @@ public:
 
 		for (auto&& i : other)
 		{
-			Push(i);
+			Push(std::move(i));
 		}
 
 		other.Clear();

@@ -133,7 +133,7 @@
   <ItemGroup>
     <ClInclude Include="default_allocator.hpp" />
     <ClInclude Include="iterator.hpp" />
-    <ClInclude Include="test_class.hpp" />
+    <ClInclude Include="tests.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

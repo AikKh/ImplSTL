@@ -8,7 +8,7 @@ class Iterator {
 public:
 	using pointer = T*;
     using reference = T&;
-    using const_reference = T&;
+    using const_reference = const T&;
 
 	Iterator(pointer ptr) : m_ptr{ ptr } {}
 

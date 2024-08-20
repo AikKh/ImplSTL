@@ -29,7 +29,7 @@
     <ClInclude Include="iterator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="test_class.hpp">
+    <ClInclude Include="tests.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
