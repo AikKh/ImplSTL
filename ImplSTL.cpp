@@ -1,10 +1,8 @@
 #include <iostream>
-#include "vector.hpp"
-#include "tests.hpp"
-
-using namespace atl;
+//#include "vector.hpp"
+#include "AVL/avl_test.hpp"
 
 int main()
 {
-    Tests();
+	AvlTest();
 }

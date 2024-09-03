@@ -13,24 +13,39 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\AVLTree">
+      <UniqueIdentifier>{8185ebdd-c7cf-4cac-b6f8-3bce03adc7ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Vector">
+      <UniqueIdentifier>{c8842e24-c300-4e20-87f4-ed7a566ec0a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ImplSTL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vector.hpp">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="Vector\vector.hpp">
+      <Filter>Header Files\Vector</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="default_allocator.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="AVL\avl_node.hpp">
+      <Filter>Header Files\AVLTree</Filter>
     </ClInclude>
-    <ClInclude Include="iterator.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Vector\vector_tests.hpp">
+      <Filter>Header Files\Vector</Filter>
     </ClInclude>
-    <ClInclude Include="tests.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Vector\default_allocator.hpp">
+      <Filter>Header Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector\iterator.hpp">
+      <Filter>Header Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="AVL\avl_tree.hpp">
+      <Filter>Header Files\AVLTree</Filter>
+    </ClInclude>
+    <ClInclude Include="AVL\avl_test.hpp">
+      <Filter>Header Files\AVLTree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
