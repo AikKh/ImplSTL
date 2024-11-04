@@ -4,14 +4,34 @@ void AvlTest()
 {
 	atl::AVLTree<int> tree;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 1; i < 3; i++)
 	{
 		tree.Insert(i);
 	}
 
 	tree.Print();
 
-	tree.Remove(3);
+	/*std::cout << "Inorder: ";
+	for (auto& node : tree.Inorder())
+	{
+		std::cout << node.Value << ", ";
+	}
+	std::cout << std::endl;
 
-	tree.Print();
+
+	std::cout << "Preorder: ";
+	for (auto& node : tree.Preorder())
+	{
+		std::cout << node.Value << ", ";
+	}
+	std::cout << std::endl;*/
+
+	std::cout << "Postorder: ";
+	for (auto& node : tree.Postorder())
+	{
+		std::cout << node.Value << ", ";
+	}
+	std::cout << std::endl;
+
+
 }

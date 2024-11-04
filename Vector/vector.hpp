@@ -6,7 +6,7 @@
 #include <vector>
 #include <stdexcept>
 
-#include "default_allocator.hpp"
+#include "../Allocators/default_allocator.hpp"
 #include "iterator.hpp"
 
 namespace atl
@@ -198,16 +198,6 @@ public:
 	}
 
 	Iterator<T> end()
-	{
-		return Iterator<T>{ m_data + m_size };
-	}
-
-	const Iterator<T> begin() const
-	{
-		return Iterator<T>{ m_data };
-	}
-
-	const Iterator<T> end() const
 	{
 		return Iterator<T>{ m_data + m_size };
 	}

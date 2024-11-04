@@ -1,7 +1,8 @@
 ﻿#include <iostream>
 #include <queue>
 #include <algorithm>
-#include "avl_node.hpp"
+
+#include "iterables.hpp"
 
 namespace atl
 {
@@ -26,6 +27,22 @@ public:
 		PrintBT("", m_root, false);
 	}
 
+	InorderIterable<T> Inorder() const
+	{
+		return InorderIterable<T>(m_root);
+	}
+
+	PreorderIterable<T> Preorder() const
+	{
+		return PreorderIterable<T>(m_root);
+	}
+
+	PostorderIterable<T> Postorder() const
+	{
+		return PostorderIterable<T>(m_root);
+	}
+
+
 	~AVLTree()
 	{
 		Delete(m_root);
@@ -43,11 +60,8 @@ private:
 			node->Left = InsertHelper(node->Left, value);
 		else if (node->Value < value)
 			node->Right = InsertHelper(node->Right, value);
-		else
-			return node;
 
 		UpdateHeight(node);
-		
 		return Balance(node);
 	}
 
@@ -108,18 +122,13 @@ private:
 		return Balance(node);
 	}
 
-	int UpdateHeight(Node* node)
+	void UpdateHeight(Node* node)
 	{
-		if (!node)
-			return -1;
-
-		auto l = UpdateHeight(node->Left);
-		auto r = UpdateHeight(node->Right);
+		auto l = node->Left ? node->Left->Height : 0;
+		auto r = node->Right ? node->Right->Height : 0;
 
 		node->Height = 1 + std::max(l, r);
 		node->Factor = r - l;
-
-		return node->Height;
 	}
 
 	Node* Balance(Node* node)
@@ -127,8 +136,7 @@ private:
 		if (-2 < node->Factor && node->Factor < 2)
 			return node;
 
-		std::cout << "Balance\n";
-		if (node->Factor < 0 && node->Left->Factor < 0)
+		if (node->Factor < 0 && node->Left->Factor <= 0)
 		{
 			return RightRotation(node);
 		}
@@ -136,7 +144,7 @@ private:
 		{
 			return LeftRightRotation(node);
 		}
-		else if (node->Factor > 0 && node->Right->Factor > 0)
+		else if (node->Factor > 0 && node->Right->Factor >= 0)
 		{
 			return LeftRotation(node);
 		}
@@ -154,6 +162,7 @@ private:
 		node->Left = left->Right;
 		left->Right = node;
 
+		UpdateHeight(node);
 		UpdateHeight(left);
 		return left;
 	}
@@ -164,6 +173,7 @@ private:
 		node->Right = right->Left;
 		right->Left = node;
 
+		UpdateHeight(node);
 		UpdateHeight(right);
 		return right;
 	}

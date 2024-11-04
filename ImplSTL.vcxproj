@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AVL\Orders\postorder.hpp" />
     <ClCompile Include="ImplSTL.cpp" />
     <ClCompile Include="Vector\vector.hpp" />
   </ItemGroup>
@@ -136,7 +137,32 @@
     <ClInclude Include="AVL\avl_node.hpp" />
     <ClInclude Include="AVL\avl_test.hpp" />
     <ClInclude Include="AVL\avl_tree.hpp" />
-    <ClInclude Include="Vector\default_allocator.hpp" />
+    <ClInclude Include="AVL\iterables.hpp" />
+    <ClInclude Include="AVL\iterator.hpp" />
+    <ClInclude Include="AVL\order.hpp" />
+    <ClInclude Include="AVL\Orders\inorder.hpp" />
+    <ClInclude Include="AVL\Orders\preorder.hpp" />
+    <ClInclude Include="Graph\adj_list.hpp" />
+    <ClInclude Include="Graph\adj_matrix.hpp" />
+    <ClInclude Include="Graph\direction_repr.hpp" />
+    <ClInclude Include="Graph\graph.hpp" />
+    <ClInclude Include="Graph\graph_repr.hpp" />
+    <ClInclude Include="Graph\is_directed_repr.hpp" />
+    <ClInclude Include="Graph\matrix_neighbor_iterator.hpp" />
+    <ClInclude Include="HashMap\hash.hpp" />
+    <ClInclude Include="HashMap\HashFunctions\int_hash.hpp" />
+    <ClInclude Include="HashMap\hash_map.hpp" />
+    <ClInclude Include="HashMap\hash_selector.hpp" />
+    <ClInclude Include="HashMap\iterator.hpp" />
+    <ClInclude Include="HashMap\node.hpp" />
+    <ClInclude Include="TypeTraits\enable_if.hpp" />
+    <ClInclude Include="TypeTraits\forward.hpp" />
+    <ClInclude Include="TypeTraits\integral_constant.hpp" />
+    <ClInclude Include="TypeTraits\is_default_constructible.hpp" />
+    <ClInclude Include="TypeTraits\void_t.hpp" />
+    <ClInclude Include="Utility\pair.hpp" />
+    <ClInclude Include="Utility\tuple.hpp" />
+    <ClInclude Include="Allocators\default_allocator.hpp" />
     <ClInclude Include="Vector\iterator.hpp" />
     <ClInclude Include="Vector\vector_tests.hpp" />
   </ItemGroup>

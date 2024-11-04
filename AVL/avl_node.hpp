@@ -26,7 +26,7 @@ public:
         return GetSuccessor<&AVLNode::Right>(this);
     }
 
-	int Height = 0;
+	int Height = 1;
 	int Factor = 0;
     T Value;
 	AVLNode* Left;

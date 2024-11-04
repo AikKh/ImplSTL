@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "vector.hpp"
 
 //#define LOG(x) std::cout << x << std::endl
 #define LOG(x)

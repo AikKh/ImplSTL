@@ -8,6 +8,7 @@ class Iterator {
 public:
 	using pointer = T*;
     using reference = T&;
+    using const_pointer = const T*;
     using const_reference = const T&;
 
 	Iterator(pointer ptr) : m_ptr{ ptr } {}
@@ -17,7 +18,7 @@ public:
         return *m_ptr;
     }
 
-    const_reference operator->() const
+    const_pointer operator->() const
     {
         return m_ptr;
     }
@@ -27,7 +28,7 @@ public:
         return *m_ptr;
     }
 
-    reference operator->()
+    pointer operator->()
     {
         return m_ptr;
     }
