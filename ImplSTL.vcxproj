@@ -147,8 +147,11 @@
     <ClInclude Include="Graph\direction_repr.hpp" />
     <ClInclude Include="Graph\graph.hpp" />
     <ClInclude Include="Graph\graph_repr.hpp" />
-    <ClInclude Include="Graph\is_directed_repr.hpp" />
+    <ClInclude Include="Graph\graph_type_traits.hpp" />
+    <ClInclude Include="Graph\iterable.hpp" />
     <ClInclude Include="Graph\matrix_neighbor_iterator.hpp" />
+    <ClInclude Include="Graph\weighed_adjlist_neighbor_iterator.hpp" />
+    <ClInclude Include="Graph\weight_repr.hpp" />
     <ClInclude Include="HashMap\hash.hpp" />
     <ClInclude Include="HashMap\HashFunctions\int_hash.hpp" />
     <ClInclude Include="HashMap\hash_map.hpp" />
@@ -165,6 +168,9 @@
     <ClInclude Include="Allocators\default_allocator.hpp" />
     <ClInclude Include="Vector\iterator.hpp" />
     <ClInclude Include="Vector\vector_tests.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

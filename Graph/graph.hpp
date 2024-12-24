@@ -4,26 +4,18 @@
 #include <stdexcept>
 #include <functional>
 #include <queue>
+#include <stack>
 
 #include "graph_repr.hpp"
 #include "direction_repr.hpp"
+#include "weight_repr.hpp"
 #include "adj_matrix.hpp"
 #include "adj_list.hpp"
-
-// 1. Implement Graph DS using adjacency List and Matrix representations.
-//    The DS should include the following functionality:
-//    Ctor, addEdge, addVertex, transpose, dfs, bfs, getNumComponents(only for undirected Graphs), 
-//    getShortestPathFromSrcToDst, getVerticesAtAGivenLevel, getAllPathsFromSrcToDst,
-//    hasCycle(2 functions for directed and undirected Graphs), topSort(recursive), Kahn's Algorithm)
-//    + Dtor -> if you use "new" operator then try to find a correct way to "delete" nodes.
-
-// 2. Finish both Leetcode problems' lists(Lecture 7 and :sunglasses:
-
-// 3. Find Graph related topics in Cormen and read them. (edited) 
+#include "graph_type_traits.hpp"
 
 // Questions
-
-// getVerticesAtAGivenLevel: where do I start? In case uses decides, what we do in case if there is no given level?
+// 1. getVerticesAtAGivenLevel: where do I start? In case uses decides, what we do in case if there is no given level?
+// 2. SFINAE of member
 
 namespace atl
 {
@@ -32,11 +24,17 @@ namespace atl
 	public:
 		Graph(int node_count) : repr{ node_count }, m_size{ node_count }
 		{
+			assert(node_count > 0, "Node count should be greater then 0");
 		}
 
-		bool AddEdge(int src, int dest)
+		bool AddEdge(int src, int dest) requires (is_unweighted_graph_v<Repr>)
 		{
 			return repr.AddEdge(src, dest);
+		}
+
+		bool AddEdge(int src, int dest, int weight) requires (is_weighted_graph_v<Repr>)
+		{
+			return repr.AddEdge(src, dest, weight);
 		}
 
 		void AddVertex()
@@ -86,7 +84,7 @@ namespace atl
 			return components;
 		}
 
-		int ShortestPath(int sorce, int destination)
+		int ShortestPath(int sorce, int destination) const requires (is_undirected_unweighted_graph_v<Repr>)
 		{
 			std::queue<int> q;
 			std::vector<bool> visited(m_size, false);
@@ -108,14 +106,12 @@ namespace atl
 					if (node == destination)
 						return len;
 
-					auto [begin, end] = repr.GetNeighbors(node);
-
-					for (; begin != end; ++begin)
+					for (int v : repr.GetNeighbors(node))
 					{
-						if (!visited[*begin])
+						if (!visited[v])
 						{
-							visited[*begin] = true;
-							q.push(*begin);
+							visited[v] = true;
+							q.push(v);
 						}
 					}
 				}
@@ -124,9 +120,7 @@ namespace atl
 			}
 		}
 
-		/*template<typename T = Repr, 
-			typename std::enable_if_t<std::is_same_v<AdjMatrix<Directed>, T> || std::is_same_v<AdjList<Directed>, T>, int> = 0>*/
-		bool HasCycle() const requires (std::is_same_v<AdjMatrix<Directed>, Repr> || std::is_same_v<AdjList<Directed>, Repr>)
+		bool HasCycle() const requires (is_directed_graph_v<Repr>)
 		{
 			std::vector<bool> visited(m_size, false);
 			std::vector<bool> current(m_size, false);
@@ -145,9 +139,7 @@ namespace atl
 			return false;
 		}
 
-		/*template<typename T = Repr, 
-			typename std::enable_if_t<std::is_same_v<AdjMatrix<Undirected>, T> || std::is_same_v<AdjList<Undirected>, T>, int> = 0>*/
-		bool HasCycle() const requires (std::is_same_v<AdjMatrix<Undirected>, Repr> || std::is_same_v<AdjList<Undirected>, Repr>)
+		bool HasCycle() const requires (is_undirected_graph_v<Repr>)
 		{
 			std::vector<bool> visited(m_size, false);
 
@@ -165,19 +157,16 @@ namespace atl
 			return false;
 		}
 
-		std::vector<int> TopoligicalSort() const requires (std::is_same_v<AdjMatrix<Directed>, Repr> || std::is_same_v<AdjList<Directed>, Repr>)
+		std::vector<int> TopoligicalSort() const requires (is_directed_graph_v<Repr>)
 		{
 			std::vector<int> result;
-			std::vector<int> in_degree(m_size, false);
+			std::vector<int> in_degree(m_size, 0);
 			std::queue<int> q;
 
 			for (int u = 0; u < m_size; u++)
 			{
-				auto [begin, end] = repr.GetNeighbors(u);
-
-				for (; begin != end; ++begin)
+				for (int v : repr.GetNeighbors(u))
 				{
-					int v = *begin;
 					++in_degree[v];
 				}
 			}
@@ -196,11 +185,8 @@ namespace atl
 
 				result.push_back(u);
 
-				auto [begin, end] = repr.GetNeighbors(u);
-
-				for (; begin != end; ++begin)
+				for (int v : repr.GetNeighbors(u))
 				{
-					int v = *begin;
 					--in_degree[v];
 
 					if (in_degree[v] == 0)
@@ -211,6 +197,80 @@ namespace atl
 			}
 
 			return result;
+		}
+
+		std::vector<std::vector<int>> Tanjan() const requires (is_directed_graph_v<Repr>)
+		{
+			std::vector<int> ids(m_size, -1);
+			std::vector<int> ll(m_size, -1);
+			std::vector<bool> on_stack(m_size, false);
+			std::stack<int> st;
+			std::vector<std::vector<int>> res;
+
+			for (int i = 0; i < m_size; i++)
+			{
+				if (ids[i] == -1)
+				{
+					tarjan_impl(i, ids, ll, on_stack, st, res);
+				}
+			}
+
+			return res;
+		}
+
+		std::vector<std::vector<int>> Kosaraju() requires (is_directed_graph_v<Repr>)
+		{
+			std::vector<bool> visited(m_size, false);
+			std::stack<int> st;
+
+			for (int i = 0; i < m_size; i++)
+			{
+				if (!visited[i])
+				{
+					fill_order(i, visited, st);
+				}
+			}
+
+			std::fill(visited.begin(), visited.end(), false);
+			Transpose();
+
+			std::vector<std::vector<int>> res;
+
+			while (!st.empty())
+			{
+				std::vector<int> scc;
+
+				fill_component(st.top(), visited, scc);
+
+				while (!st.empty() && visited[st.top()])
+				{
+					st.pop();
+				}
+
+				res.push_back(std::move(scc));
+			}
+
+			Transpose();
+
+			return res;
+		}
+
+		int Dijkstra(int src, int dest) const requires (is_weighted_graph_v<Repr>)
+		{
+			return dijkstra(src, dest);
+		}
+
+		int BellmanFord(int src, int dest) const requires (is_directed_weighted_graph_v<Repr>)
+		{
+			std::vector<int> distances(m_size, std::numeric_limits<int>::max());
+			distances[src] = 0;
+
+			for (int i = 0; i < m_size - 1; i++)
+			{
+				relax(distances);
+			}
+
+			return distances[dest];
 		}
 
 	private:
@@ -227,11 +287,9 @@ namespace atl
 
 			current[node] = true;
 
-			auto [begin, end] = repr.GetNeighbors(node);
-
-			for (; begin != end; ++begin)
+			for (int v : repr.GetNeighbors(node))
 			{
-				if (has_cycle_directed(*begin, visited, current))
+				if (has_cycle_directed(v, visited, current))
 				{
 					return true;
 				}
@@ -252,11 +310,9 @@ namespace atl
 
 			visited[node] = true;
 
-			auto [begin, end] = repr.GetNeighbors(node);
-
-			for (; begin != end; ++begin)
+			for (int v : repr.GetNeighbors(node))
 			{
-				if (*begin != prev && has_cycle_undirected(*begin, node, visited))
+				if (v != prev && has_cycle_undirected(v, node, visited))
 				{
 					return true;
 				}
@@ -273,11 +329,9 @@ namespace atl
 			visited[node] = true;
 			func(node);
 
-			auto [begin, end] = repr.GetNeighbors(node);
-
-			for (; begin != end; ++begin)
+			for (int v:repr.GetNeighbors(node))
 			{
-				dfs_impl(*begin, visited, func);
+				dfs_impl(v, visited, func);
 			}
 		}
 
@@ -295,14 +349,132 @@ namespace atl
 
 				func(node);
 
-				auto [begin, end] = repr.GetNeighbors(node);
-
-				for (; begin != end; ++begin)
+				for (int v:repr.GetNeighbors(node))
 				{
-					if (!visited[*begin])
+					if (!visited[v])
 					{
-						visited[*begin] = true;
-						q.push(*begin);
+						visited[v] = true;
+						q.push(v);
+					}
+				}
+			}
+		}
+
+		void tarjan_impl(int u, std::vector<int>& ids, std::vector<int>& ll, std::vector<bool>& on_stack, std::stack<int>& st, std::vector<std::vector<int>>& res) const
+		{
+			static int time = 0;
+
+			ids[u] = ll[u] = time++;
+			on_stack[u] = true;
+			st.push(u);
+
+			for (int v : repr.GetNeighbors(u))
+			{
+				if (ids[v] == -1)
+				{
+					tarjan_impl(v, ids, ll, on_stack, st, res);
+					ll[u] = std::min(ll[u], ll[v]);
+				}
+				else if (on_stack[v] == true)
+				{
+					ll[u] = std::min(ll[u], ids[v]);
+				}
+			}
+
+			if (ids[u] == ll[u])
+			{
+				std::vector<int> scc;
+
+				while (st.top() != u)
+				{
+					scc.push_back(st.top());
+					on_stack[st.top()] = false;
+					st.pop();
+				}
+				scc.push_back(st.top());
+				on_stack[st.top()] = false;
+				st.pop();
+
+				res.push_back(std::move(scc));
+			}
+		}
+		
+		void fill_order(int u, std::vector<bool>& visited, std::stack<int>& st)
+		{
+			visited[u] = true;
+
+			for (int v:repr.GetNeighbors(u))
+			{
+				if (!visited[v])
+				{
+					fill_order(v, visited, st);
+				}
+			}
+
+			st.push(u);
+		}
+
+		void fill_component(int u, std::vector<bool>& visited, std::vector<int>& scc)
+		{
+			visited[u] = true;
+			scc.push_back(u);
+
+			for (int v:repr.GetNeighbors(u))
+			{
+				if (!visited[v])
+				{
+					fill_component(v, visited, scc);
+				}
+			}
+		}
+
+		int dijkstra(int src, int dest) const
+		{
+			auto cmp = [](std::pair<int, int>& a, std::pair<int, int>& b) { return a.first > b.first; };
+			std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(cmp)> pq;
+			std::vector<int> distances(m_size, std::numeric_limits<int>::max());
+
+			pq.push({ 0, src });
+			distances[src] = 0;
+
+			while (!pq.empty())
+			{
+				auto [dist, u] = pq.top();
+				pq.pop();
+
+				if (dist > distances[u])
+				{
+					continue;
+				}
+
+				// Does this become Bellman-Ford if we remove this else if?
+				else if (u == dest)
+				{
+					return dist;
+				}
+
+				for (auto [w, v] : repr.GetWeightedNeighbors(u))
+				{
+					if (distances[v] > dist + w)
+					{
+						distances[v] = dist + w;
+						pq.push({ dist + w, v });
+					}
+				}
+			}
+
+			return distances[dest];
+		}
+
+		void relax(std::vector<int>& distances) const
+		{
+			for (int u = 0; u < m_size; u++)
+			{
+				for (auto [w, v] : repr.GetWeightedNeighbors(u))
+				{
+					if (distances[v] > distances[u] + w)
+					{
+						distances[v] = distances[u] + w;
 					}
 				}
 			}

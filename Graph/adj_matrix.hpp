@@ -1,12 +1,14 @@
 #pragma once
 
 #include <vector>
+#include "iterable.hpp"
 #include "direction_repr.hpp"
+#include "weight_repr.hpp"
 #include "matrix_neighbor_iterator.hpp"
 
 namespace atl
 {
-    template<typename T>
+    template<typename Direction, typename Weight>
     class AdjMatrix {
     public:
         AdjMatrix(int node_count) : m_matrix(node_count, std::vector<int>(node_count)) {}
@@ -38,11 +40,17 @@ namespace atl
             }
         }
 
-        std::pair<NeighborIterator, NeighborIterator> GetNeighbors(int n) const
+        Iterable<MatrixNeighborIterator> GetNeighbors(int n) const
         {
-            NeighborIterator f(m_matrix[n].begin(), 0, m_matrix.size());
-            NeighborIterator s(m_matrix[n].end(), m_matrix.size(), m_matrix.size());
-            return std::make_pair(f, s);
+            MatrixNeighborIterator f(m_matrix[n].begin(), 0, m_matrix.size());
+            MatrixNeighborIterator s(m_matrix[n].end(), m_matrix.size(), m_matrix.size());
+            return Iterable<MatrixNeighborIterator>(f, s);
+        }
+
+        Iterable<std::vector<std::pair<int, int>>::const_iterator> GetWeightedNeighbors(int n) const
+        {
+            // TODO: write matrix_weighted_neighbor_iterator
+            //return Iterable{ m_matrix[n].begin(), m_matrix[n].end() };
         }
 
     protected:
@@ -50,17 +58,15 @@ namespace atl
     };
 
     template <>
-    class AdjMatrix<Directed> : public AdjMatrix<void> {
+    class AdjMatrix<Directed, Weighted> : public AdjMatrix<void, void> {
     public:
-        using AdjMatrix<void>::AdjMatrix;
-        using AdjMatrix<void>::Transpose;
-        using AdjMatrix<void>::AddVertex;
+        using AdjMatrix<void, void>::AdjMatrix;
 
-        bool AddEdge(int from, int to)
+        bool AddEdge(int from, int to, int weight)
         {
             if (from >= 0 && from < m_matrix.size())
             {
-                m_matrix[from][to] = 1;
+                m_matrix[from][to] = weight;
                 return true;
             }
             return false;
@@ -68,21 +74,41 @@ namespace atl
     };
 
     template <>
-    class AdjMatrix<Undirected> : public AdjMatrix<void> {
+    class AdjMatrix<Undirected, Weighted> : public AdjMatrix<void, void> {
     public:
-        using AdjMatrix<void>::AdjMatrix;
-        using AdjMatrix<void>::Transpose;
-        using AdjMatrix<void>::AddVertex;
+        using AdjMatrix<void, void>::AdjMatrix;
 
-        bool AddEdge(int from, int to)
+        bool AddEdge(int from, int to, int weight)
         {
             if (from >= 0 && from < m_matrix.size() && to >= 0 && to < m_matrix.size())
             {
-                m_matrix[from][to] = 1;
-                m_matrix[to][from] = 1;
+                m_matrix[from][to] = weight;
+                m_matrix[to][from] = weight;
                 return true;
             }
             return false;
+        }
+    };
+
+    template <>
+    class AdjMatrix<Directed, Unweighted> : public AdjMatrix<Directed, Weighted> {
+    public:
+        using AdjMatrix<Directed, Weighted>::AdjMatrix;
+
+        bool AddEdge(int from, int to)
+        {
+            return AdjMatrix<Directed, Weighted>::AddEdge(from, to, 1);
+        }
+    };
+
+    template <>
+    class AdjMatrix<Undirected, Unweighted> : public AdjMatrix<Undirected, Weighted> {
+    public:
+        using AdjMatrix<Undirected, Weighted>::AdjMatrix;
+
+        bool AddEdge(int from, int to)
+        {
+            return AdjMatrix<Undirected, Weighted>::AddEdge(from, to, 1);
         }
     };
 

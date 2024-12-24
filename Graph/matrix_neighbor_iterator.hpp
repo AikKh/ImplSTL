@@ -4,7 +4,7 @@
 
 namespace atl
 {
-    class NeighborIterator {
+    class MatrixNeighborIterator {
     public:
         using iterator = std::vector<int>::iterator;
         using const_iterator = std::vector<int>::const_iterator;
@@ -13,7 +13,7 @@ namespace atl
         using const_reference = std::vector<int>::const_reference;
         using const_pointer = std::vector<int>::const_pointer;
 
-        NeighborIterator(const_iterator ptr, int start, int size) : m_ptr{ ptr }, m_index{ start }, m_size{ size }
+        MatrixNeighborIterator(const_iterator ptr, int start, int size) : m_ptr{ ptr }, m_index{ start }, m_size{ size }
         {
             SkipZeros();
         }
@@ -38,26 +38,26 @@ namespace atl
             return &m_index;
         }
 
-        NeighborIterator& operator++()
+        MatrixNeighborIterator& operator++()
         {
             ++m_index;
             SkipZeros();
             return *this;
         }
 
-        NeighborIterator operator++(int)
+        MatrixNeighborIterator operator++(int)
         {
-            NeighborIterator temp = *this;
+            MatrixNeighborIterator temp = *this;
             ++(*this);
             return temp;
         }
 
-        bool operator!=(const NeighborIterator& other) const
+        bool operator!=(const MatrixNeighborIterator& other) const
         {
             return m_index != other.m_index;
         }
 
-        bool operator==(const NeighborIterator& other) const
+        bool operator==(const MatrixNeighborIterator& other) const
         {
             return m_index == other.m_index;
         }

@@ -33,7 +33,7 @@ public:
     AVLNode* Right;
 
 private:
-    using NodePtr = AVLNode * AVLNode::*;
+    using NodePtr = AVLNode* AVLNode::*;
 
     template <NodePtr dir>
     static AVLNode* GetSuccessor(AVLNode* node)
